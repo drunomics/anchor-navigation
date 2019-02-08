@@ -1,0 +1,12 @@
+{
+  "name": "drunomics/anchor_navigation",
+  "description": "Generates dynamic anchor navigation for content.",
+  "type": "drupal-module",
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "drunomics",
+      "email": "hello@drunomics.com"
+    }
+  ]
+}
