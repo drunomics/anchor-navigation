@@ -1,0 +1,15 @@
+field.field_settings.anchor_navigation_anchor:
+  type: mapping
+  label: 'Anchor'
+  mapping:
+    label_fallback:
+      type: string
+      label: 'Anchor label fallback field'
+
+field.formatter.settings.anchor_navigation_formatter:
+  type: mapping
+  label: 'Anchor navigation formatter'
+  mapping:
+    render_mode:
+      type: string
+      label: 'Render mode'

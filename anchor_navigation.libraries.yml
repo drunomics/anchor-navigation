@@ -1,0 +1,8 @@
+anchor_navigation:
+  css:
+    base:
+      assets/dist/css/anchor-navigation.css: { minified: true }
+  js:
+    assets/dist/js/anchor-navigation.js: {}
+  dependencies:
+    - core/drupalSettings

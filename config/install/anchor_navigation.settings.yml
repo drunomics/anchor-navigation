@@ -1,0 +1,13 @@
+breakpoints:
+  - breakpointUp: 0
+    display: fixed
+  - breakpointUp: 900
+    display: sticky
+highlightColor: '#e4003a'
+displaySettings:
+  sticky:
+    offset: 110
+    limitToParent: true
+  fixed:
+    offset: 85
+    limitToParent: true

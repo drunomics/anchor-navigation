@@ -1,0 +1,181 @@
+<?php
+
+/**
+ * @file
+ * Module file.
+ */
+
+use Drupal\Core\Entity\FieldableEntityInterface;
+use Drupal\field\Entity\FieldConfig;
+
+/**
+ * Implements hook_theme().
+ */
+function anchor_navigation_theme() {
+  return [
+    'anchor_navigation' => [
+      'render element' => 'elements',
+      'variables' => [
+        'toc_elements' => NULL,
+        'toc_title'    => NULL,
+        'toc_subtitle' => NULL,
+        'social_icons' => NULL,
+      ],
+      'template' => 'anchor-navigation',
+    ],
+  ];
+}
+
+/**
+ * Gets the anchor navigation field of an entity.
+ *
+ * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
+ *   Entity object.
+ *
+ * @return \Drupal\anchor_navigation\Plugin\Field\FieldType\AnchorNavigationItem|null
+ *   The field or NULL if the node doesn't have an anchor navigation.
+ */
+function anchor_navigation_get_anchor_navigation(FieldableEntityInterface $entity) {
+  foreach ($entity->getFieldDefinitions() as $definition) {
+    if ($definition instanceof FieldConfig && $definition->getType() === 'anchor_navigation') {
+      /** @var \Drupal\Core\Field\FieldItemListInterface $anchor_navigation */
+      $anchor_navigation_field = $entity->get($definition->getName());
+      /** @var \Drupal\anchor_navigation\Plugin\Field\FieldType\AnchorNavigationItem $anchor_navigation */
+      $anchor_navigation = $anchor_navigation_field->first();
+      return $anchor_navigation;
+    }
+  }
+
+  return NULL;
+}
+
+/**
+ * Checks if the entity has an the anchor navigation field.
+ *
+ * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
+ *   Entity object.
+ *
+ * @return bool
+ */
+function anchor_navigation_has_anchor_navigation(FieldableEntityInterface $entity) {
+  foreach ($entity->getFieldDefinitions() as $definition) {
+    if ($definition instanceof FieldConfig && $definition->getType() === 'anchor_navigation') {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Gets the anchor field of an entity.
+ *
+ * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
+ *   Entity object.
+ *
+ * @return \Drupal\anchor_navigation\Plugin\Field\FieldType\AnchorItem|null
+ *   The field or NULL if the node doesn't have an anchor navigation.
+ */
+function anchor_navigation_get_anchor(FieldableEntityInterface $entity) {
+  foreach ($entity->getFieldDefinitions() as $definition) {
+    if ($definition instanceof FieldConfig && $definition->getType() === 'anchor_navigation_anchor') {
+      /** @var \Drupal\Core\Field\FieldItemListInterface $anchor_navigation */
+      $anchor_field = $entity->get($definition->getName());
+      /** @var \Drupal\anchor_navigation\Plugin\Field\FieldType\AnchorItem $anchor */
+      $anchor = $anchor_field->first();
+      return $anchor;
+    }
+  }
+
+  return NULL;
+}
+
+/**
+ * Gets all anchor fields of an entity.
+ *
+ * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
+ *   Entity object.
+ *
+ * @return \Drupal\anchor_navigation\Plugin\Field\FieldType\AnchorItem[]
+ *   The field or NULL if the node doesn't have an anchor navigation.
+ */
+function anchor_navigation_get_anchors(FieldableEntityInterface $entity) {
+  /** @var \Drupal\Core\Entity\EntityFieldManagerInterface $field_manager */
+  $field_manager = \Drupal::service('entity_field.manager');
+  $anchor_fields = $field_manager->getFieldMapByFieldType('anchor_navigation_anchor');
+
+  $anchors = [];
+  foreach ($entity->getFieldDefinitions() as $field_name => $definition) {
+    if (
+      $definition instanceof FieldConfig
+      && !empty($anchor_fields[$definition->getSetting('target_type')])
+      && !empty($definition->getSetting('handler_settings')['target_bundles'])
+    ) {
+
+      $target_bundles = $definition->getSetting('handler_settings')['target_bundles'];
+      $valid_bundles = [];
+
+      foreach ($anchor_fields[$definition->getSetting('target_type')] as $anchor_field) {
+        $valid_bundles += array_intersect_key($anchor_field['bundles'], $target_bundles);
+      }
+
+      if (!empty($valid_bundles)) {
+        $target_entity = $entity->get($field_name);
+        foreach ($target_entity as $item) {
+          if ($anchor = anchor_navigation_get_anchor($item->entity)) {
+            $anchors[] = $anchor;
+          }
+        }
+      }
+    }
+  }
+
+  return $anchors;
+}
+
+/**
+ * Gets the table of content build for the anchor navigation.
+ *
+ * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
+ *   Entity object.
+ *
+ * @return array
+ *   Drupal render array.
+ */
+function anchor_navigation_toc_build(FieldableEntityInterface $entity) {
+  $anchor_navigation = anchor_navigation_get_anchor_navigation($entity);
+  if (!$anchor_navigation || !$anchor_navigation->isEnabled()) {
+    return [];
+  }
+
+  $toc_elements = [];
+  foreach (anchor_navigation_get_anchors($entity) as $anchor) {
+    if (!$anchor->isEmpty()) {
+      $toc_elements[] = [
+        'link' => '#' . $anchor->getAnchorId(),
+        'title' => $anchor->getAnchorLabel(),
+      ];
+    }
+  }
+
+  if (empty($toc_elements)) {
+    return [];
+  }
+
+  $build = [
+    '#theme' => 'anchor_navigation',
+    '#toc_elements' => $toc_elements,
+    '#toc_title'    => t('Table of contents'),
+    '#toc_subtitle' => $entity->label(),
+    '#attached' => [
+      'library' => [
+        'anchor_navigation/anchor_navigation',
+      ],
+      'drupalSettings' => [
+        'anchorNavigation' => \Drupal::config('anchor_navigation.settings')->get(),
+      ],
+    ],
+  ];
+
+  return $build;
+}

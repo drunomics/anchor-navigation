@@ -1,0 +1,6 @@
+type: module
+name: Anchor navigation
+description: Plugin to auto generate an anchor navigation for nodes.
+core: 8.x
+dependencies:
+  - paragraphs:paragraphs
