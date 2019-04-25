@@ -1,36 +1,53 @@
 import stickyEl from './lib/stickyEl';
-
 const componentName = 'anchor-navigation';
 const baseSelector = '.' + componentName;
 const triggerSelector = baseSelector + '__trigger';
-const navEl = document.querySelector('section' + baseSelector);
-window.AnchorNavigation = {};
-window.AnchorNavigation.settings = null;
-window.AnchorNavigation.init = once(() => {
-  buildNavigation();
-});
+let navEls = [];
 
-if (navEl && !navEl.dataset.attached) {
-  window.AnchorNavigation.settings = drupalSettings.anchorNavigation;
-  window.AnchorNavigation.init();
-  navEl.dataset.attached = true;
+initAnchorNavigation();
+
+window.addEventListener('initAnchorNavigation', initAnchorNavigation);
+
+function initAnchorNavigation() {
+  debugger;
+  window.AnchorNavigation = [];
+  navEls = [...document.querySelectorAll('section' + baseSelector)];
+  for (let index in navEls) {
+    let navEl = navEls[index];
+
+    // Skip if already initialized.
+    if (typeof window.AnchorNavigation[index] !== 'undefined') {
+      continue;
+    }
+    window.AnchorNavigation[index] = {};
+    window.AnchorNavigation[index].settings = null;
+    window.AnchorNavigation[index].init = once(() => {
+      buildNavigation(navEl, index);
+    });
+
+    if (navEl && !navEl.dataset.attached) {
+      window.AnchorNavigation[index].settings = drupalSettings.anchorNavigation;
+      window.AnchorNavigation[index].init();
+      navEl.dataset.attached = true;
+    }
+  }
 }
 
 /**
  * Initiates the anchor navigation.
  */
-function buildNavigation () {
+function buildNavigation (navEl, index) {
   const parentEl = navEl.parentElement;
   const tocLinks = navEl.querySelectorAll('a.toc_link');
   const scrollTopTrigger = navEl.querySelector(baseSelector + '__scroll-top ' + triggerSelector);
   const tocTrigger = navEl.querySelector(baseSelector + '__toc ' + triggerSelector);
   const socialTrigger = navEl.querySelector(baseSelector + '__social-icons ' + triggerSelector);
-  const defaultVariant = window.AnchorNavigation.settings.breakpoints[0].display;
-  const defaultSetting = window.AnchorNavigation.settings.displaySettings[defaultVariant];
+  const defaultVariant = window.AnchorNavigation[index].settings.breakpoints[0].display;
+  const defaultSetting = window.AnchorNavigation[index].settings.displaySettings[defaultVariant];
 
-  window.AnchorNavigation.overlayElement = document.createElement('div');
+  window.AnchorNavigation[index].overlayElement = document.createElement('div');
 
-  window.AnchorNavigation.stickyInstance = new stickyEl(
+  window.AnchorNavigation[index].stickyInstance = new stickyEl(
     navEl,
     defaultVariant === 'sticky'
     ? defaultSetting.offset
@@ -39,16 +56,16 @@ function buildNavigation () {
   );
 
   window.addEventListener('resize', (event) => {
-    displayVariant(window.innerWidth);
+    displayVariant(window.innerWidth, index);
   });
 
-  displayVariant(window.innerWidth);
+  displayVariant(window.innerWidth, index);
 
   parentEl.classList.add('anchor-navigation-tether');
-  navEl.style.color = window.AnchorNavigation.settings.highlightColor;
+  navEl.style.color = window.AnchorNavigation[index].settings.highlightColor;
 
-  window.AnchorNavigation.overlayElement.classList.add('anchor-navigation-overlay');
-  window.AnchorNavigation.overlayElement.addEventListener('click', () => {
+  window.AnchorNavigation[index].overlayElement.classList.add('anchor-navigation-overlay');
+  window.AnchorNavigation[index].overlayElement.addEventListener('click', () => {
     closeChildMenu(tocTrigger);
     closeChildMenu(socialTrigger);
   });
@@ -82,7 +99,7 @@ function buildNavigation () {
       }
       else {
         closeChildMenu(socialTrigger);
-        openChildMenu(tocTrigger);
+        openChildMenu(tocTrigger, index);
       }
     });
   }
@@ -96,7 +113,7 @@ function buildNavigation () {
       }
       else {
         closeChildMenu(tocTrigger);
-        openChildMenu(socialTrigger);
+        openChildMenu(socialTrigger, index);
       }
     });
   }
@@ -104,7 +121,11 @@ function buildNavigation () {
   if (scrollTopTrigger) {
     scrollTopTrigger.addEventListener('click', (event) => {
       event.preventDefault();
-      const parentBoundings = parentEl.getBoundingClientRect();
+      let wrapper = parents(navEls[index], baseSelector + '__wrapper');
+      if (!wrapper) {
+        wrapper = parentEl;
+      }
+      const parentBoundings = wrapper.getBoundingClientRect();
       const destination = (parentBoundings.y + window.pageYOffset) - (window.innerHeight / 7);
 
       closeChildMenu(socialTrigger);
@@ -163,13 +184,13 @@ function closeChildMenu(el) {
  *
  * @param {HTMLElement} parent
  */
-function openChildMenu(el) {
+function openChildMenu(el, index) {
   const menu = el.parentElement.querySelector(baseSelector + '__menu');
   const openClass = componentName + '__menu--open';
 
   document.body.classList.add(openClass);
   menu.classList.add(openClass);
-  document.body.appendChild(window.AnchorNavigation.overlayElement);
+  document.body.appendChild(window.AnchorNavigation[index].overlayElement);
 }
 
 /**
@@ -178,12 +199,12 @@ function openChildMenu(el) {
  * @param {integer} currentSize
  *    The current size of the window.
  */
-function displayVariant(currentSize) {
+function displayVariant(currentSize, index) {
   let variant = 'sticky';
 
-  for (let i = 0; i < window.AnchorNavigation.settings.breakpoints.length; i++) {
-    const breakpoint = window.AnchorNavigation.settings.breakpoints[i];
-    const nextBreakpoint = window.AnchorNavigation.settings.breakpoints[i+1] || null;
+  for (let i = 0; i < window.AnchorNavigation[index].settings.breakpoints.length; i++) {
+    const breakpoint = window.AnchorNavigation[index].settings.breakpoints[i];
+    const nextBreakpoint = window.AnchorNavigation[index].settings.breakpoints[i+1] || null;
     if (
       !nextBreakpoint
       || currentSize < nextBreakpoint.breakpointUp
@@ -193,13 +214,14 @@ function displayVariant(currentSize) {
     }
   }
 
-   const setting = window.AnchorNavigation.settings.displaySettings[variant];
+   const setting = window.AnchorNavigation[index].settings.displaySettings[variant];
+   const navEl = navEls[index];
    navEl.className = [
      componentName,
      componentName + '--' + variant
    ].join(' ');
-   if (window.AnchorNavigation.stickyInstance) {
-     window.AnchorNavigation.stickyInstance.update(
+   if (window.AnchorNavigation[index].stickyInstance) {
+     window.AnchorNavigation[index].stickyInstance.update(
        navEl,
        variant === 'sticky'
        ? setting.offset
@@ -228,3 +250,22 @@ function once(fn, context) {
     return result;
   };
 }
+
+/**
+ * Returns matching parent element or false if not matching element was found.
+ *
+ * @param {HTMLElement} el
+ * @param {String} parentSelector
+ * @returns {boolean|HTMLElement}
+ */
+function parents(el, parentSelector) {
+  const parent = el.parentNode;
+
+  if (parent === null) {
+    return false;
+  }
+
+  return parent.matches(parentSelector) ? parent : parents(parent, parentSelector);
+}
+
+export {initAnchorNavigation}
