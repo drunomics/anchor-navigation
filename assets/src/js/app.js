@@ -2,7 +2,7 @@ import stickyEl from './lib/stickyEl';
 const componentName = 'anchor-navigation';
 const baseSelector = '.' + componentName;
 const triggerSelector = baseSelector + '__trigger';
-let navEls = [];
+const navEls = [];
 
 initAnchorNavigation();
 
