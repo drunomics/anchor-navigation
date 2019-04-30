@@ -11,7 +11,7 @@ window.addEventListener('initAnchorNavigation', initAnchorNavigation);
 function initAnchorNavigation() {
   debugger;
   window.AnchorNavigation = [];
-  navEls = [...document.querySelectorAll('section' + baseSelector)];
+  navEls.push(...Array.from(document.querySelectorAll('section' + baseSelector));
   for (let index in navEls) {
     let navEl = navEls[index];
 
