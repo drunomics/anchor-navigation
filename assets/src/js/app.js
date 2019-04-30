@@ -121,10 +121,7 @@ function buildNavigation (navEl, index) {
   if (scrollTopTrigger) {
     scrollTopTrigger.addEventListener('click', (event) => {
       event.preventDefault();
-      let wrapper = parents(navEls[index], baseSelector + '__wrapper');
-      if (!wrapper) {
-        wrapper = parentEl;
-      }
+      const wrapper = parents(navEls[index], baseSelector + '__wrapper') || parentEl;
       const parentBoundings = wrapper.getBoundingClientRect();
       const destination = (parentBoundings.y + window.pageYOffset) - (window.innerHeight / 7);
 
