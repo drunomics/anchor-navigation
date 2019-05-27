@@ -12,17 +12,24 @@ use Drupal\field\Entity\FieldConfig;
  * Implements hook_theme().
  */
 function anchor_navigation_theme() {
+  $base_theme = [
+    'render element' => 'elements',
+    'variables' => [
+      'toc_elements' => NULL,
+      'toc_title'    => NULL,
+      'toc_subtitle' => NULL,
+    ],
+  ];
   return [
-    'anchor_navigation' => [
-      'render element' => 'elements',
+    'anchor_navigation' => array_merge_recursive($base_theme, [
       'variables' => [
-        'toc_elements' => NULL,
-        'toc_title'    => NULL,
-        'toc_subtitle' => NULL,
         'social_icons' => NULL,
       ],
       'template' => 'anchor-navigation',
-    ],
+    ]),
+    'anchor_navigation_in_content' => $base_theme + [
+        'template' => 'anchor-navigation-in-content',
+      ],
   ];
 }
 
@@ -142,7 +149,7 @@ function anchor_navigation_get_anchors(FieldableEntityInterface $entity) {
  * @return array
  *   Drupal render array.
  */
-function anchor_navigation_toc_build(FieldableEntityInterface $entity) {
+function anchor_navigation_toc_build(FieldableEntityInterface $entity, $in_content = FALSE) {
   $anchor_navigation = anchor_navigation_get_anchor_navigation($entity);
   if (!$anchor_navigation || !$anchor_navigation->isEnabled()) {
     return [];
@@ -163,7 +170,7 @@ function anchor_navigation_toc_build(FieldableEntityInterface $entity) {
   }
 
   $build = [
-    '#theme' => 'anchor_navigation',
+    '#theme' => $in_content ? 'anchor_navigation_in_content' : 'anchor_navigation',
     '#toc_elements' => $toc_elements,
     '#toc_title'    => t('Table of contents'),
     '#toc_subtitle' => $entity->label(),

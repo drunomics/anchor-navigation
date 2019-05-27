@@ -1,0 +1,22 @@
+<section class="anchor-navigation anchor-navigation--in-content anchor-navigation">
+  <div class="anchor-navigation__label">
+    {% trans %}Table of contents{% endtrans %}
+  </div>
+  <div class="anchor-navigation__toc">
+    <div class="anchor-navigation__menu anchor-navigation__menu--list">
+      <header>
+        <div class="title">{{toc_title}}</div>
+        {% if toc_subtitle %}
+          <div class="subtitle">{{toc_subtitle}}</div>
+        {% endif %}
+      </header>
+      <ul>
+        {%- for toc_element in toc_elements -%}
+          <li>
+            <a class="toc_link" href="{{- toc_element.link -}}">{{- toc_element.title -}}</a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </div>
+</section>
