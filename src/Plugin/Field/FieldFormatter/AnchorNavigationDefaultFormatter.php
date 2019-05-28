@@ -40,10 +40,6 @@ class AnchorNavigationDefaultFormatter extends FormatterBase {
         $summary[] = $this->t('Rendered via Anchor navigation block.');
         break;
 
-      case 'in_content':
-        $summary[] = $this->t('Rendered in content.');
-        break;
-
       case 'field':
       default:
         $summary[] = $this->t('Rendered as a field.');
@@ -61,7 +57,6 @@ class AnchorNavigationDefaultFormatter extends FormatterBase {
       '#type' => 'select',
       '#options' => [
         'field' => $this->t('Field'),
-        'in_content' => $this->t('In Content'),
         'block' => $this->t('Block'),
       ],
       '#default_value' => $this->getSetting('render_mode'),
@@ -75,20 +70,7 @@ class AnchorNavigationDefaultFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $render_mode = $this->getSetting('render_mode');
-
-    switch($render_mode) {
-      case "block":
-        return [];
-
-      case "in_content":
-        $in_content = TRUE;
-        // Fallthrough.
-
-      case "field":
-        $in_content = $in_content ?? FALSE;
-        $build = anchor_navigation_toc_build($items->getEntity(), $in_content);
-        return $build;
-    }
+    return anchor_navigation_toc_build($items->getEntity(), $render_mode);
   }
 
 }

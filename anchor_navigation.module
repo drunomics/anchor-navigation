@@ -27,8 +27,8 @@ function anchor_navigation_theme() {
       ],
       'template' => 'anchor-navigation',
     ]),
-    'anchor_navigation_in_content' => $base_theme + [
-        'template' => 'anchor-navigation-in-content',
+    'block_anchor_navigation' => $base_theme + [
+        'template' => 'block-anchor-navigation',
       ],
   ];
 }
@@ -149,7 +149,7 @@ function anchor_navigation_get_anchors(FieldableEntityInterface $entity) {
  * @return array
  *   Drupal render array.
  */
-function anchor_navigation_toc_build(FieldableEntityInterface $entity, $in_content = FALSE) {
+function anchor_navigation_toc_build(FieldableEntityInterface $entity, $render_mode = 'field') {
   $anchor_navigation = anchor_navigation_get_anchor_navigation($entity);
   if (!$anchor_navigation || !$anchor_navigation->isEnabled()) {
     return [];
@@ -170,7 +170,7 @@ function anchor_navigation_toc_build(FieldableEntityInterface $entity, $in_conte
   }
 
   $build = [
-    '#theme' => $in_content ? 'anchor_navigation_in_content' : 'anchor_navigation',
+    '#theme' => $render_mode == 'block' ? 'block_anchor_navigation' : 'anchor_navigation',
     '#toc_elements' => $toc_elements,
     '#toc_title'    => t('Table of contents'),
     '#toc_subtitle' => $entity->label(),

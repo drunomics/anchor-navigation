@@ -3,7 +3,7 @@ import stickyEl from './lib/stickyEl';
 const componentName = 'anchor-navigation';
 const baseSelector = '.' + componentName;
 const triggerSelector = baseSelector + '__trigger';
-const navEl = document.querySelector('section' + baseSelector);
+const navEl = document.querySelector('section' + baseSelector + ':not(' + baseSelector + '--block)');
 
 if (!navEl.classList.contains(componentName + '--in-content')) {
   window.AnchorNavigation = {};
