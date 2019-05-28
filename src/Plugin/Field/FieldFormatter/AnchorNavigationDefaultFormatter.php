@@ -70,12 +70,7 @@ class AnchorNavigationDefaultFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $render_mode = $this->getSetting('render_mode');
-    if ($render_mode == 'block') {
-      return [];
-    }
-
-    $build = anchor_navigation_toc_build($items->getEntity());
-    return $build;
+    return anchor_navigation_toc_build($items->getEntity(), $render_mode);
   }
 
 }
