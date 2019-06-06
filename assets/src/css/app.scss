@@ -3,6 +3,19 @@ $primary-color: #666;
 $gutter-size: 1em;
 $z-index: 100;
 
+.anchor-navigation__wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+
+  * {
+    pointer-events: all;
+  }
+}
+
 .anchor-navigation-tether {
   position: relative;
   padding-bottom: 4rem;
@@ -20,8 +33,8 @@ $z-index: 100;
 
 .anchor-navigation {
   $comp: &;
-  transform: rotate(360deg);
   backface-visibility: hidden;
+  pointer-events: none;
 
   display: flex;
   z-index: $z-index;
@@ -32,34 +45,16 @@ $z-index: 100;
   }
 
   & > div {
+    pointer-events: all;
     margin-right: $gutter-size;
-  }
-
-  &--block {
-    display: block;
-
-    #{$comp}__label {
-      display: none;
-    }
-
-    #{$comp}__menu {
-      display: block;
-      position: initial;
-
-      &--list {
-        max-width: inherit;
-        width: initial;
-      }
-    }
   }
 
   &--sticky {
     flex-direction: row-reverse;
-    position: absolute;
-    bottom: 100%;
-    right: 100%;
-    margin: -$gutter-size $gutter-size 0 0;
-    transform-origin: 100% 100%;
+    position: sticky;
+    height: 0;
+    top:0;
+    padding-bottom: 100%;
     transform: rotate(-90deg);
 
     #{$comp}__icon {
@@ -91,13 +86,15 @@ $z-index: 100;
     }
 
     #{$comp}__trigger {
+      transform: translateY(-100%);
       padding: 1.3em;
     }
   }
 
   &--fixed {
-    position: absolute;
-    bottom: 100%;
+    display: inline-flex;
+    position: sticky;
+    top: calc(100vh - 5.5em);
     padding: $gutter-size 0;
 
     #{$comp}__menu--list {

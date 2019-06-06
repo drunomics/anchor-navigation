@@ -1,22 +1,17 @@
-import stickyEl from './lib/stickyEl';
-
 const componentName = 'anchor-navigation';
 const baseSelector = '.' + componentName;
 const triggerSelector = baseSelector + '__trigger';
-const navEl = document.querySelector('section' + baseSelector + ':not(' + baseSelector + '--block)');
+const navEl = document.querySelector('section' + baseSelector);
+window.AnchorNavigation = {};
+window.AnchorNavigation.settings = null;
+window.AnchorNavigation.init = once(() => {
+  buildNavigation();
+});
 
-if (!navEl.classList.contains(componentName + '--in-content')) {
-  window.AnchorNavigation = {};
-  window.AnchorNavigation.settings = null;
-  window.AnchorNavigation.init = once(() => {
-    buildNavigation();
-  });
-
-  if (navEl && !navEl.dataset.attached) {
-    window.AnchorNavigation.settings = drupalSettings.anchorNavigation;
-    window.AnchorNavigation.init();
-    navEl.dataset.attached = true;
-  }
+if (navEl && !navEl.dataset.attached) {
+  window.AnchorNavigation.settings = drupalSettings.anchorNavigation;
+  window.AnchorNavigation.init();
+  navEl.dataset.attached = true;
 }
 
 /**
@@ -33,13 +28,13 @@ function buildNavigation () {
 
   window.AnchorNavigation.overlayElement = document.createElement('div');
 
-  window.AnchorNavigation.stickyInstance = new stickyEl(
-    navEl,
-    defaultVariant === 'sticky'
-    ? defaultSetting.offset
-    : window.innerHeight - defaultSetting.offset,
-    defaultSetting.limitToParent
-  );
+  // Build a wrapper element around the navigation
+  const wrapperElement = document.createElement('div');
+  wrapperElement.classList.add(componentName + '__wrapper')
+  // Insert the wrapper in the parent element
+  parentEl.appendChild(wrapperElement);
+  // Move the navigation to the wrapper
+  wrapperElement.appendChild(navEl);
 
   window.addEventListener('resize', (event) => {
     displayVariant(window.innerWidth);
@@ -201,15 +196,15 @@ function displayVariant(currentSize) {
      componentName,
      componentName + '--' + variant
    ].join(' ');
-   if (window.AnchorNavigation.stickyInstance) {
-     window.AnchorNavigation.stickyInstance.update(
-       navEl,
-       variant === 'sticky'
-       ? setting.offset
-       : window.innerHeight - setting.offset,
-       setting.limitToParent
-     );
-   }
+  //  if (window.AnchorNavigation.stickyInstance) {
+  //    window.AnchorNavigation.stickyInstance.update(
+  //      navEl,
+  //      variant === 'sticky'
+  //      ? setting.offset
+  //      : window.innerHeight - setting.offset,
+  //      setting.limitToParent
+  //    );
+  //  }
 }
 
 /**
