@@ -196,15 +196,6 @@ function displayVariant(currentSize) {
      componentName,
      componentName + '--' + variant
    ].join(' ');
-  //  if (window.AnchorNavigation.stickyInstance) {
-  //    window.AnchorNavigation.stickyInstance.update(
-  //      navEl,
-  //      variant === 'sticky'
-  //      ? setting.offset
-  //      : window.innerHeight - setting.offset,
-  //      setting.limitToParent
-  //    );
-  //  }
 }
 
 /**
