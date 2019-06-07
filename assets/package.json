@@ -1,6 +1,6 @@
 {
   "name": "anchor-navigation",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Drupal anchor navigation for table of content and share",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack -p --config config/build.config.js --progress --colors",

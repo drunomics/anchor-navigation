@@ -49,6 +49,24 @@ $z-index: 100;
     margin-right: $gutter-size;
   }
 
+  &--block {
+    display: block;
+
+    #{$comp}__label {
+      display: none;
+    }
+
+    #{$comp}__menu {
+      display: block;
+      position: initial;
+
+      &--list {
+        max-width: inherit;
+        width: initial;
+      }
+    }
+  }
+
   &--sticky {
     flex-direction: row-reverse;
     position: sticky;

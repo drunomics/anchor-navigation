@@ -25,6 +25,7 @@ class AnchorNavigationDefaultFormatter extends FormatterBase {
   public static function defaultSettings() {
     return [
       'render_mode' => 'field',
+      'render_inline' => FALSE,
     ] + parent::defaultSettings();
   }
 
@@ -62,6 +63,12 @@ class AnchorNavigationDefaultFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('render_mode'),
     ];
 
+    $element['render_inline'] = [
+      '#title' => $this->t('Render inline (static) in addition to sticky.'),
+      '#type' => 'checkbox',
+      '#default_value' => $this->getSetting('render_inline'),
+    ];
+
     return $element;
   }
 
@@ -70,7 +77,15 @@ class AnchorNavigationDefaultFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $render_mode = $this->getSetting('render_mode');
-    return anchor_navigation_toc_build($items->getEntity(), $render_mode);
+    $render_inline = $this->getSetting('render_inline');
+
+    $build = [];
+    $build[] = anchor_navigation_toc_build($items->getEntity(), $render_mode);
+    if ($render_inline && $render_mode != 'block') {
+      $build[] = anchor_navigation_toc_build($items->getEntity(), 'block');
+    }
+
+    return $build;
   }
 
 }

@@ -1,17 +1,20 @@
 const componentName = 'anchor-navigation';
 const baseSelector = '.' + componentName;
 const triggerSelector = baseSelector + '__trigger';
-const navEl = document.querySelector('section' + baseSelector);
-window.AnchorNavigation = {};
-window.AnchorNavigation.settings = null;
-window.AnchorNavigation.init = once(() => {
-  buildNavigation();
-});
+// const navEl = document.querySelector('section' + baseSelector);
+const navEl = document.querySelector('section' + baseSelector + ':not(' + baseSelector + '--block)');
+if (!navEl.classList.contains(componentName + '--in-content')) {
+  window.AnchorNavigation = {};
+  window.AnchorNavigation.settings = null;
+  window.AnchorNavigation.init = once(() => {
+    buildNavigation();
+  });
 
-if (navEl && !navEl.dataset.attached) {
-  window.AnchorNavigation.settings = drupalSettings.anchorNavigation;
-  window.AnchorNavigation.init();
-  navEl.dataset.attached = true;
+  if (navEl && !navEl.dataset.attached) {
+    window.AnchorNavigation.settings = drupalSettings.anchorNavigation;
+    window.AnchorNavigation.init();
+    navEl.dataset.attached = true;
+  }
 }
 
 /**
