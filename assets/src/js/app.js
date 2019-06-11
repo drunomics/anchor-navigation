@@ -28,7 +28,6 @@ function buildNavigation () {
   const socialTrigger = navEl.querySelector(baseSelector + '__social-icons ' + triggerSelector);
   const defaultVariant = window.AnchorNavigation.settings.breakpoints[0].display;
   const defaultSetting = window.AnchorNavigation.settings.displaySettings[defaultVariant];
-  // TODO: this is a placeholder selector replace with real one.
   const inlineAnchorNavEl = document.querySelector('.anchor-navigation--block')
 
   window.AnchorNavigation.overlayElement = document.createElement('div');
