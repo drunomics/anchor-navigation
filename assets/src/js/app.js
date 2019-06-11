@@ -28,6 +28,8 @@ function buildNavigation () {
   const socialTrigger = navEl.querySelector(baseSelector + '__social-icons ' + triggerSelector);
   const defaultVariant = window.AnchorNavigation.settings.breakpoints[0].display;
   const defaultSetting = window.AnchorNavigation.settings.displaySettings[defaultVariant];
+  // TODO: this is a placeholder selector replace with real one.
+  const inlineAnchorNavEl = document.querySelector('.anchor-navigation--block')
 
   window.AnchorNavigation.overlayElement = document.createElement('div');
 
@@ -121,6 +123,26 @@ function buildNavigation () {
         window.scrollTo(0, destination);
       }
     })
+  }
+
+  if (tocTrigger && inlineAnchorNavEl && window.IntersectionObserver) {
+    const observer = new IntersectionObserver (
+      (els) => {
+        if (els[0].intersectionRatio > 0) {
+          tocTrigger.dataset.originalWidth = tocTrigger.dataset.originalWidth || tocTrigger.offsetWidth
+          tocTrigger.style.maxWidth = 0
+          tocTrigger.classList.add('collapsed')
+        } else {
+          tocTrigger.style.maxWidth = `${tocTrigger.dataset.originalWidth}px`;
+          tocTrigger.classList.remove('collapsed')
+        }
+      },
+      {
+        rootMargin: '50px 0px',
+        threshold: 0.01,
+      }
+    )
+    observer.observe(inlineAnchorNavEl)
   }
 }
 
