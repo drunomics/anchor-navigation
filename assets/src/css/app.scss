@@ -22,6 +22,7 @@ $z-index: 100;
   $comp: &;
   transform: rotate(360deg);
   backface-visibility: hidden;
+  pointer-events: none;
 
   display: flex;
   z-index: $z-index;
@@ -37,11 +38,12 @@ $z-index: 100;
 
   &--sticky {
     flex-direction: row-reverse;
-    position: absolute;
-    bottom: 100%;
-    right: 100%;
-    margin: -$gutter-size $gutter-size 0 0;
-    transform-origin: 100% 100%;
+    position: fixed;
+    position: -webkit-sticky;
+    position: sticky;
+    height: 0;
+    top:0;
+    padding-bottom: 100%;
     transform: rotate(-90deg);
 
     #{$comp}__icon {
@@ -78,8 +80,11 @@ $z-index: 100;
   }
 
   &--fixed {
-    position: absolute;
-    bottom: 100%;
+    display: inline-flex;
+    position: fixed;
+    position: -webkit-sticky;
+    position: sticky;
+    top: calc(100vh - 5.5em);
     padding: $gutter-size 0;
 
     #{$comp}__menu--list {
