@@ -3,6 +3,7 @@
 namespace Drupal\anchor_navigation\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\node\Entity\Node;
 
 /**
  * AnchorNavigationBlock places the anchor navigation field as a block.
@@ -27,7 +28,7 @@ class AnchorNavigationBlock extends BlockBase {
       return [];
     }
 
-    $build = anchor_navigation_toc_build($node);
+    $build = anchor_navigation_toc_build($node, 'block');
     return $build;
   }
 
@@ -37,6 +38,9 @@ class AnchorNavigationBlock extends BlockBase {
    * @return \Drupal\Node\NodeInterface|null
    */
   protected function getNode() {
+    if (isset($this->getConfiguration()['node']) && $this->getConfiguration()['node'] instanceof Node) {
+      return $this->getConfiguration()['node'];
+    }
     return $this->getContextValue('node');
   }
 

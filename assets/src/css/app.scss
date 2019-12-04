@@ -3,6 +3,19 @@ $primary-color: #666;
 $gutter-size: 1em;
 $z-index: 100;
 
+.anchor-navigation__wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+
+  * {
+    pointer-events: all;
+  }
+}
+
 .anchor-navigation-tether {
   position: relative;
   padding-bottom: 4rem;
@@ -20,7 +33,6 @@ $z-index: 100;
 
 .anchor-navigation {
   $comp: &;
-  transform: rotate(360deg);
   backface-visibility: hidden;
   pointer-events: none;
 
@@ -33,7 +45,26 @@ $z-index: 100;
   }
 
   & > div {
+    pointer-events: all;
     margin-right: $gutter-size;
+  }
+
+  &--block {
+    display: block;
+
+    #{$comp}__label {
+      display: none;
+    }
+
+    #{$comp}__menu {
+      display: block;
+      position: initial;
+
+      &--list {
+        max-width: inherit;
+        width: initial;
+      }
+    }
   }
 
   &--sticky {
@@ -75,6 +106,7 @@ $z-index: 100;
     }
 
     #{$comp}__trigger {
+      transform: translateY(-100%);
       padding: 1.3em;
     }
   }
@@ -134,6 +166,16 @@ $z-index: 100;
     border: 1px solid $primary-color;
     border-radius: .2em;
     cursor: pointer;
+    transition: 200ms;
+    overflow: hidden;
+
+    &.collapsed {
+      border-right: 0;
+      border-left:0;
+      padding-right: 0;
+      padding-left: 0;
+      min-width: 0;
+    }
   }
 
   &__menu {

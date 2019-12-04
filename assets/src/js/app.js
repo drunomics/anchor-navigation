@@ -1,19 +1,20 @@
-import stickyEl from './lib/stickyEl';
-
 const componentName = 'anchor-navigation';
 const baseSelector = '.' + componentName;
 const triggerSelector = baseSelector + '__trigger';
-const navEl = document.querySelector('section' + baseSelector);
-window.AnchorNavigation = {};
-window.AnchorNavigation.settings = null;
-window.AnchorNavigation.init = once(() => {
-  buildNavigation();
-});
+// const navEl = document.querySelector('section' + baseSelector);
+const navEl = document.querySelector('section' + baseSelector + ':not(' + baseSelector + '--block)');
+if (!navEl.classList.contains(componentName + '--in-content')) {
+  window.AnchorNavigation = {};
+  window.AnchorNavigation.settings = null;
+  window.AnchorNavigation.init = once(() => {
+    buildNavigation();
+  });
 
-if (navEl && !navEl.dataset.attached) {
-  window.AnchorNavigation.settings = drupalSettings.anchorNavigation;
-  window.AnchorNavigation.init();
-  navEl.dataset.attached = true;
+  if (navEl && !navEl.dataset.attached) {
+    window.AnchorNavigation.settings = drupalSettings.anchorNavigation;
+    window.AnchorNavigation.init();
+    navEl.dataset.attached = true;
+  }
 }
 
 /**
@@ -27,16 +28,17 @@ function buildNavigation () {
   const socialTrigger = navEl.querySelector(baseSelector + '__social-icons ' + triggerSelector);
   const defaultVariant = window.AnchorNavigation.settings.breakpoints[0].display;
   const defaultSetting = window.AnchorNavigation.settings.displaySettings[defaultVariant];
+  const inlineAnchorNavEl = document.querySelector('.anchor-navigation--block')
 
   window.AnchorNavigation.overlayElement = document.createElement('div');
 
-  window.AnchorNavigation.stickyInstance = new stickyEl(
-    navEl,
-    defaultVariant === 'sticky'
-    ? defaultSetting.offset
-    : window.innerHeight - defaultSetting.offset,
-    defaultSetting.limitToParent
-  );
+  // Build a wrapper element around the navigation
+  const wrapperElement = document.createElement('div');
+  wrapperElement.classList.add(componentName + '__wrapper')
+  // Insert the wrapper in the parent element
+  parentEl.appendChild(wrapperElement);
+  // Move the navigation to the wrapper
+  wrapperElement.appendChild(navEl);
 
   window.addEventListener('resize', (event) => {
     displayVariant(window.innerWidth);
@@ -121,6 +123,26 @@ function buildNavigation () {
       }
     })
   }
+
+  if (tocTrigger && inlineAnchorNavEl && window.IntersectionObserver) {
+    const observer = new IntersectionObserver (
+      (els) => {
+        if (els[0].intersectionRatio > 0) {
+          tocTrigger.dataset.originalWidth = tocTrigger.dataset.originalWidth || tocTrigger.offsetWidth
+          tocTrigger.style.maxWidth = 0
+          tocTrigger.classList.add('collapsed')
+        } else {
+          tocTrigger.style.maxWidth = `${tocTrigger.dataset.originalWidth}px`;
+          tocTrigger.classList.remove('collapsed')
+        }
+      },
+      {
+        rootMargin: '50px 0px',
+        threshold: 0.01,
+      }
+    )
+    observer.observe(inlineAnchorNavEl)
+  }
 }
 
 /**
@@ -198,15 +220,6 @@ function displayVariant(currentSize) {
      componentName,
      componentName + '--' + variant
    ].join(' ');
-   if (window.AnchorNavigation.stickyInstance) {
-     window.AnchorNavigation.stickyInstance.update(
-       navEl,
-       variant === 'sticky'
-       ? setting.offset
-       : window.innerHeight - setting.offset,
-       setting.limitToParent
-     );
-   }
 }
 
 /**
