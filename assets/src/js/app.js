@@ -34,7 +34,12 @@ function buildNavigation () {
 
   // Build a wrapper element around the navigation
   const wrapperElement = document.createElement('div');
-  wrapperElement.classList.add(componentName + '__wrapper')
+  wrapperElement.classList.add(componentName + '__wrapper');
+
+  // This forces the safari bottom toolbar to show to fix bottom bar touch issues.
+  // more info: https://www.eventbrite.com/engineering/mobile-safari-why/
+  document.body.setAttribute('style', `${document.body.getAttribute('style')}; -webkit-overflow-scrolling: touch;`)
+
   // Insert the wrapper in the parent element
   parentEl.appendChild(wrapperElement);
   // Move the navigation to the wrapper
