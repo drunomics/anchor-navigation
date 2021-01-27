@@ -57,6 +57,13 @@ class AnchorItem extends FieldItemBase implements FieldItemInterface {
   /**
    * {@inheritdoc}
    */
+  public static function mainPropertyName() {
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function defaultFieldSettings() {
     return [
       'label_fallback' => '',
